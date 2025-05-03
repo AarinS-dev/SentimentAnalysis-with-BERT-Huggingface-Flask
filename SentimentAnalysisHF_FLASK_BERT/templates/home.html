@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SocketIO Chat</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Chat Room</h1>
+    <input id="msg" autocomplete="off">
+    <button onclick="sendMessage()">Send</button>
+    <ul id="messages"></ul>
+
+    <script>
+        const socket = io();
+
+        socket.on('message', function(msg) {
+            const li = document.createElement("li");
+            if (typeof msg === "object" && msg.sentiment) {
+
+            li.innerText = `"${msg.message}" → Sentiment: ${msg.sentiment} (${msg.score})`;
+            
+
+            if (msg.sentiment == 'POSITIVE') {
+                li.style.color = 'green';
+            }
+            else if (msg.sentiment == 'NEGATIVE') {
+                li.style.color = 'red'
+            }
+            else {
+                li.style.color = 'gray'
+            }
+        
+        }    else {
+                li.innerText = `⚠️ ${msg}`;
+                li.style.color = 'orange';
+            }
+            document.getElementById("messages").appendChild(li);
+        });
+
+        function sendMessage() {
+            const msg = document.getElementById("msg").value;
+            socket.emit('message', msg);
+            document.getElementById("msg").value = '';
+        }
+    </script>
+</body>
+</html>
